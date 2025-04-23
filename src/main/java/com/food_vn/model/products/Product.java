@@ -1,7 +1,9 @@
 package com.food_vn.model.products;
 
 import com.food_vn.model.categories.Category;
+import com.food_vn.model.conpons.Coupon;
 import com.food_vn.model.evaluates.Evaluate;
+import com.food_vn.model.users.Role;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -31,7 +33,7 @@ public class Product {
     private Category category;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_evaluate",
+    @JoinTable(name = "product_evaluate",
             joinColumns = {@JoinColumn(name = "product_id")},
             inverseJoinColumns = {@JoinColumn(name = "evaluate_id")})
     private Set<Evaluate> evaluates;
@@ -39,7 +41,13 @@ public class Product {
     @Column(nullable = false, columnDefinition = "INT DEFAULT 5")
     private double score;
 
-    public Product(Long id, String name, String images, Number price, String description, boolean enabled, Category category, Set<Evaluate> evaluates, double score) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "product_coupon",
+            joinColumns = {@JoinColumn(name = "product_id")},
+            inverseJoinColumns = {@JoinColumn(name = "coupon_id")})
+    private Set<Coupon> coupons;
+
+    public Product(Long id, String name, String images, Number price, String description, boolean enabled, Category category, Set<Evaluate> evaluates, double score, Set<Coupon> coupons) {
         this.id = id;
         this.name = name;
         this.images = images;
@@ -49,6 +57,7 @@ public class Product {
         this.category = category;
         this.evaluates = evaluates;
         this.score = score;
+        this.coupons = coupons;
     }
 
     public Product() {
@@ -124,5 +133,13 @@ public class Product {
 
     public void setScore(double score) {
         this.score = score;
+    }
+
+    public Set<Coupon> getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(Set<Coupon> coupons) {
+        this.coupons = coupons;
     }
 }
