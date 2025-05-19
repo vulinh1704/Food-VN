@@ -1,12 +1,13 @@
 package com.food_vn.model.users;
 
+import com.food_vn.lib.base_model.BaseModel;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-public class User implements Serializable {
+public class User extends BaseModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -16,10 +17,26 @@ public class User implements Serializable {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column()
+    private String phoneNumber;
+
+    @Column()
+    private String gender;
+
+    @Column()
+    private String dateOfBirth;
+
+    @Column()
+    private String avatar;
+
+
+    @Column()
     private String confirmPassword;
     private boolean enabled = true;
 
@@ -29,10 +46,18 @@ public class User implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Set<Role> roles;
 
-    public User(String username, String password, String confirmPassword, Set<Role> roles) {
+
+    public User(Long id, String username, String email, String password, String phoneNumber, String gender, String dateOfBirth, String avatar, String confirmPassword, boolean enabled, Set<Role> roles) {
+        this.id = id;
         this.username = username;
+        this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.avatar = avatar;
         this.confirmPassword = confirmPassword;
+        this.enabled = enabled;
         this.roles = roles;
     }
 
@@ -87,4 +112,43 @@ public class User implements Serializable {
         this.enabled = enabled;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 }

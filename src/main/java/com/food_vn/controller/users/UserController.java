@@ -1,8 +1,12 @@
 package com.food_vn.controller.users;
 
+import com.food_vn.lib.app_const.API_RESPONSE;
 import com.food_vn.model.api_responses.ApiResponse;
+import com.food_vn.model.products.Product;
 import com.food_vn.model.users.JwtResponse;
 import com.food_vn.model.users.User;
+import com.food_vn.model.users.UserDTO;
+import com.food_vn.model.users.UserPrinciple;
 import com.food_vn.service.users.IUserService;
 import com.food_vn.service.users.impl.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +36,10 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) throw new RuntimeException("invalid_input");
+        if (bindingResult.hasErrors()) throw new RuntimeException(API_RESPONSE.INVALID_INPUT_MESSAGE);
         userService.register(user);
         ApiResponse<User> response = new ApiResponse<>(
-                true,
-                "register_success",
+                API_RESPONSE.SAVED_SUCCESS_MESSAGE,
                 HttpStatus.CREATED.value()
         );
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -50,33 +53,65 @@ public class UserController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User currentUser = userService.findByUsername(user.getUsername());
         ApiResponse<JwtResponse> response = new ApiResponse<>(
-                true,
-                "login_success",
+                API_RESPONSE.LOGIN_SUCCESS_MESSAGE,
                 new JwtResponse(jwt, currentUser.getId(), userDetails.getUsername(), userDetails.getAuthorities()),
                 HttpStatus.ACCEPTED.value()
         );
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
+    @GetMapping("/users/get-info")
+    public ResponseEntity<?> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            ApiResponse<User> response = new ApiResponse<>(
+                    API_RESPONSE.UNAUTHORIZED_MESSAGE,
+                    HttpStatus.UNAUTHORIZED.value()
+            );
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
+        Optional<User> user = userService.findById(userDetails.getId());
+        if (user.isEmpty()) {
+            ApiResponse<User> response = new ApiResponse<>(
+                    API_RESPONSE.UNAUTHORIZED_MESSAGE,
+                    HttpStatus.UNAUTHORIZED.value()
+            );
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        ApiResponse<User> response = new ApiResponse<>(
+                API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
+                user.get(),
+                HttpStatus.OK.value()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/update-info")
+    public ResponseEntity<?> update(@RequestBody UserDTO user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            ApiResponse<User> response = new ApiResponse<>(
+                    API_RESPONSE.UNAUTHORIZED_MESSAGE,
+                    HttpStatus.UNAUTHORIZED.value()
+            );
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
+        user.setId(userDetails.getId());
+        User userOutput = userService.save(user);
+        ApiResponse<User> response = new ApiResponse<>(
+                API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
+                userOutput,
+                HttpStatus.OK.value()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getProfile(@PathVariable Long id) {
         Optional<User> userOptional = this.userService.findById(id);
         return userOptional.map(user -> new ResponseEntity<>(user, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUserProfile(@PathVariable Long id, @RequestBody User user) {
-        Optional<User> userOptional = this.userService.findById(id);
-        if (!userOptional.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        user.setId(userOptional.get().getId());
-        user.setUsername(userOptional.get().getUsername());
-        user.setEnabled(userOptional.get().isEnabled());
-        user.setPassword(userOptional.get().getPassword());
-        user.setRoles(userOptional.get().getRoles());
-
-        userService.save(user);
-        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

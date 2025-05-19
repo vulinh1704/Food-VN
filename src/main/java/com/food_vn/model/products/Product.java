@@ -1,15 +1,15 @@
 package com.food_vn.model.products;
 
+import com.food_vn.lib.base_model.BaseModel;
 import com.food_vn.model.categories.Category;
 import com.food_vn.model.conpons.Coupon;
 import com.food_vn.model.evaluates.Evaluate;
-import com.food_vn.model.users.Role;
 import jakarta.persistence.*;
 
 import java.util.Set;
 
 @Entity
-public class Product {
+public class Product extends BaseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,16 +18,14 @@ public class Product {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String images;
 
     @Column(nullable = false)
-    private Number price;
+    private Long price;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String description;
-
-    private boolean enabled = true;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
@@ -39,7 +37,7 @@ public class Product {
     private Set<Evaluate> evaluates;
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 5")
-    private double score;
+    private double score = 5;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "product_coupon",
@@ -47,17 +45,20 @@ public class Product {
             inverseJoinColumns = {@JoinColumn(name = "coupon_id")})
     private Set<Coupon> coupons;
 
-    public Product(Long id, String name, String images, Number price, String description, boolean enabled, Category category, Set<Evaluate> evaluates, double score, Set<Coupon> coupons) {
+    @Column(nullable = false)
+    private int quantity;
+
+    public Product(Long id, String name, String images, Long price, String description, Category category, Set<Evaluate> evaluates, double score, Set<Coupon> coupons, int quantity) {
         this.id = id;
         this.name = name;
         this.images = images;
         this.price = price;
         this.description = description;
-        this.enabled = enabled;
         this.category = category;
         this.evaluates = evaluates;
         this.score = score;
         this.coupons = coupons;
+        this.quantity = quantity;
     }
 
     public Product() {
@@ -87,11 +88,11 @@ public class Product {
         this.images = images;
     }
 
-    public Number getPrice() {
+    public Long getPrice() {
         return price;
     }
 
-    public void setPrice(Number price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
 
@@ -101,14 +102,6 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Category getCategory() {
@@ -142,4 +135,13 @@ public class Product {
     public void setCoupons(Set<Coupon> coupons) {
         this.coupons = coupons;
     }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
 }

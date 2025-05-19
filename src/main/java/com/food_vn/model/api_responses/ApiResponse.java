@@ -1,7 +1,9 @@
 package com.food_vn.model.api_responses;
 
+import com.food_vn.lib.app_const.API_RESPONSE;
+
 public class ApiResponse<T> {
-    private boolean success;
+    private boolean success = API_RESPONSE.API_SUCCESS;
     private String message;
     private T data;
     private int status;
@@ -16,6 +18,17 @@ public class ApiResponse<T> {
     public ApiResponse(boolean success, String message, int status) {
         this.success = success;
         this.message = message;
+        this.status = status;
+    }
+
+    public ApiResponse(String message, int status) {
+        this.message = message;
+        this.status = status;
+    }
+
+    public ApiResponse(String message, T data, int status) {
+        this.message = message;
+        this.data = data;
         this.status = status;
     }
 

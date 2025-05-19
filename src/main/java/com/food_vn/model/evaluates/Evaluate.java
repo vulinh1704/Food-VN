@@ -1,10 +1,11 @@
 package com.food_vn.model.evaluates;
 
+import com.food_vn.lib.base_model.BaseModel;
 import com.food_vn.model.users.User;
 import jakarta.persistence.*;
 
 @Entity
-public class Evaluate {
+public class Evaluate extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

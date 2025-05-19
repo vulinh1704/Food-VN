@@ -1,10 +1,12 @@
 package com.food_vn.model.order_details;
+
+import com.food_vn.lib.base_model.BaseModel;
 import com.food_vn.model.orders.Orders;
 import com.food_vn.model.products.Product;
 import jakarta.persistence.*;
 
 @Entity
-public class OrderDetail {
+public class OrderDetail extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,20 +18,24 @@ public class OrderDetail {
     private Product product;
 
     @Column(nullable = false)
-    private Number price;
+    private Double price;
 
     @Column(nullable = false)
-    private Number quantity;
+    private Integer quantity;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String coupons;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(Long id, Orders orders, Product product, Number price, Number quantity) {
+    public OrderDetail(Long id, Orders orders, Product product, Double price, Integer quantity, String coupons) {
         this.id = id;
         this.orders = orders;
         this.product = product;
         this.price = price;
         this.quantity = quantity;
+        this.coupons = coupons;
     }
 
     public Long getId() {
@@ -56,19 +62,27 @@ public class OrderDetail {
         this.product = product;
     }
 
-    public Number getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Number price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
-    public Number getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Number quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(String coupons) {
+        this.coupons = coupons;
     }
 }

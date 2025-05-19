@@ -1,8 +1,11 @@
 package com.food_vn.service.users.impl;
 
+import com.food_vn.model.orders.Orders;
 import com.food_vn.model.users.Role;
 import com.food_vn.model.users.User;
+import com.food_vn.model.users.UserDTO;
 import com.food_vn.model.users.UserPrinciple;
+import com.food_vn.repository.orders.OrdersRepository;
 import com.food_vn.repository.users.RoleRepository;
 import com.food_vn.repository.users.UserRepository;
 import com.food_vn.service.users.IUserService;
@@ -19,13 +22,15 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class UserService implements IUserService {
+public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private OrdersRepository ordersRepository;
 
     @Override
     @Transactional
@@ -48,16 +53,37 @@ public class UserService implements IUserService {
 
     public User register(User user) {
         User userReq = this.findByUsername(user.getUsername());
-        if (userReq != null) throw new RuntimeException("user_already_exists");
+        if (userReq != null) throw new RuntimeException("User already exists");
         if (!this.isCorrectConfirmPassword(user)) throw new RuntimeException("confirm_password_incorrect");
         user.setRoles(this.getUserRoles());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User output = this.userRepository.save(user);
+        Orders orders = new Orders();
+        orders.setUser(output);
+        orders.setTotal(0.0);
+        orders.setStatus(1);
+        ordersRepository.save(orders);
+        return output;
     }
 
     @Override
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(UserDTO userDTO) {
+        User existingUser = userRepository.findById(userDTO.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        User userReq = userRepository.findByEmailAndIdNot(userDTO.getEmail(), userDTO.getId());
+        if (userReq != null) throw new RuntimeException("Email already exists");
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setAvatar(userDTO.getAvatar());
+        user.setId(userDTO.getId());
+        user.setGender(userDTO.getGender());
+        user.setEmail(userDTO.getEmail());
+        user.setDateOfBirth(userDTO.getDateOfBirth());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setPassword(existingUser.getPassword());
+        user.setConfirmPassword(existingUser.getConfirmPassword());
+        user.setRoles(existingUser.getRoles());
+        return userRepository.save(user);
     }
 
     @Override

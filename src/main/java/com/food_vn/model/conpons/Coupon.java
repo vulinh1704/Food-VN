@@ -1,10 +1,11 @@
 package com.food_vn.model.conpons;
+import com.food_vn.lib.base_model.BaseModel;
 import jakarta.persistence.*;
 
 import java.util.Date;
 
 @Entity
-public class Coupon {
+public class Coupon extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,10 +20,10 @@ public class Coupon {
     private String name;
 
     @Column()
-    private Date from;
+    private Date fromDate;
 
     @Column()
-    private Date to;
+    private Date toDate;
 
     public Coupon() {
     }
@@ -32,8 +33,8 @@ public class Coupon {
         this.discount = discount;
         this.type = type;
         this.name = name;
-        this.from = from;
-        this.to = to;
+        this.fromDate = from;
+        this.toDate = to;
     }
 
     public Long getId() {
@@ -68,19 +69,19 @@ public class Coupon {
         this.name = name;
     }
 
-    public Date getFrom() {
-        return from;
+    public Date getFromDate() {
+        return fromDate;
     }
 
-    public void setFrom(Date from) {
-        this.from = from;
+    public void setFromDate(Date from) {
+        this.fromDate = from;
     }
 
-    public Date getTo() {
-        return to;
+    public Date getToDate() {
+        return toDate;
     }
 
-    public void setTo(Date to) {
-        this.to = to;
+    public void setToDate(Date to) {
+        this.toDate = to;
     }
 }

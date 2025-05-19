@@ -5,7 +5,7 @@ import com.food_vn.security.jwt.CustomAccessDeniedHandler;
 import com.food_vn.security.jwt.JwtAuthenticationFilter;
 import com.food_vn.security.jwt.RestAuthenticationEntryPoint;
 import com.food_vn.service.users.IUserService;
-import com.food_vn.service.users.impl.UserService;
+import com.food_vn.service.users.impl.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +31,7 @@ public class SecurityConfig {
 
     @Bean
     public IUserService userService() {
-        return new UserService();
+        return new UserServiceImpl();
     }
 
     @Bean
@@ -73,8 +73,8 @@ public class SecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/login", "/register", "/hello").permitAll()
-                                .requestMatchers("/users/**").hasAnyAuthority("ROLE_USER")
+                                .requestMatchers("/login", "/register", "/hello", "/categories/**", "/coupons/**", "/products/**").permitAll()
+                                .requestMatchers("/users/**", "/addresses/**", "/orders/**", "order-details/**").hasAnyAuthority("ROLE_USER")
                                 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
 //                        .requestMatchers(HttpMethod.GET).hasAnyRole("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 //                        .requestMatchers(HttpMethod.DELETE, "/categories",

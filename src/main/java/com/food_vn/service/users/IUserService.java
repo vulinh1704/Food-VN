@@ -2,13 +2,14 @@ package com.food_vn.service.users;
 
 import com.food_vn.model.products.Product;
 import com.food_vn.model.users.User;
+import com.food_vn.model.users.UserDTO;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Optional;
 
 public interface IUserService extends UserDetailsService {
-    void save(User user);
+    User save(UserDTO userDTO);
 
     User register(User user);
 
