@@ -67,16 +67,17 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(10);
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/login", "/register", "/hello", "/categories/**", "/coupons/**", "/products/**").permitAll()
-                                .requestMatchers("/users/**", "/addresses/**", "/orders/**", "order-details/**").hasAnyAuthority("ROLE_USER")
+//                                .requestMatchers().hasAnyAuthority("ROLE_USER")
                                 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
-//                        .requestMatchers(HttpMethod.GET).hasAnyRole("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+                                .requestMatchers("/users/**", "/addresses/**", "/orders/**", "/order-details/**", "/evaluations/**").hasAnyRole("USER", "ADMIN")
+
+
 //                        .requestMatchers(HttpMethod.DELETE, "/categories",
 //                                "/typeOfQuestions",
 //                                "/questions",

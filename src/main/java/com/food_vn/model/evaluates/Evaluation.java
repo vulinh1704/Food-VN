@@ -1,11 +1,12 @@
 package com.food_vn.model.evaluates;
 
 import com.food_vn.lib.base_model.BaseModel;
+import com.food_vn.model.products.Product;
 import com.food_vn.model.users.User;
 import jakarta.persistence.*;
 
 @Entity
-public class Evaluate extends BaseModel {
+public class Evaluation extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,14 +20,22 @@ public class Evaluate extends BaseModel {
     @Column(nullable = false)
     private String comment;
 
-    public Evaluate(Long id, User user, int score, String comment) {
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Product product;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String images;
+
+    public Evaluation(Long id, User user, int score, String comment, Product product, String images) {
         this.id = id;
         this.user = user;
         this.score = score;
         this.comment = comment;
+        this.product = product;
+        this.images = images;
     }
 
-    public Evaluate() {
+    public Evaluation() {
     }
 
     public Long getId() {
@@ -59,5 +68,21 @@ public class Evaluate extends BaseModel {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
     }
 }

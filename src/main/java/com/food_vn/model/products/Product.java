@@ -3,7 +3,7 @@ package com.food_vn.model.products;
 import com.food_vn.lib.base_model.BaseModel;
 import com.food_vn.model.categories.Category;
 import com.food_vn.model.conpons.Coupon;
-import com.food_vn.model.evaluates.Evaluate;
+import com.food_vn.model.evaluates.Evaluation;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -30,12 +30,6 @@ public class Product extends BaseModel {
     @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "product_evaluate",
-            joinColumns = {@JoinColumn(name = "product_id")},
-            inverseJoinColumns = {@JoinColumn(name = "evaluate_id")})
-    private Set<Evaluate> evaluates;
-
     @Column(nullable = false, columnDefinition = "INT DEFAULT 5")
     private double score = 5;
 
@@ -48,14 +42,13 @@ public class Product extends BaseModel {
     @Column(nullable = false)
     private int quantity;
 
-    public Product(Long id, String name, String images, Long price, String description, Category category, Set<Evaluate> evaluates, double score, Set<Coupon> coupons, int quantity) {
+    public Product(Long id, String name, String images, Long price, String description, Category category, double score, Set<Coupon> coupons, int quantity) {
         this.id = id;
         this.name = name;
         this.images = images;
         this.price = price;
         this.description = description;
         this.category = category;
-        this.evaluates = evaluates;
         this.score = score;
         this.coupons = coupons;
         this.quantity = quantity;
@@ -110,14 +103,6 @@ public class Product extends BaseModel {
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public Set<Evaluate> getEvaluates() {
-        return evaluates;
-    }
-
-    public void setEvaluates(Set<Evaluate> evaluates) {
-        this.evaluates = evaluates;
     }
 
     public double getScore() {

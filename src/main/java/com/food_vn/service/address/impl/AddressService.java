@@ -4,6 +4,7 @@ import com.food_vn.lib.base_serivce.BaseService;
 import com.food_vn.model.address.Address;
 import com.food_vn.repository.address.AddressRepository;
 import com.food_vn.service.address.IAddressService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,12 @@ public class AddressService extends BaseService implements IAddressService {
     private AddressRepository addressRepository;
 
     @Override
+    @Transactional
     public Address save(Address address) throws Exception {
+        Long userId = address.getUser().getId();
+        if (address.isDefault()) {
+            addressRepository.clearDefaultForUser(userId);
+        }
         return addressRepository.save(address);
     }
 

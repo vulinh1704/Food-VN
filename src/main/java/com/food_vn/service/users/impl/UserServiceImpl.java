@@ -155,6 +155,19 @@ public class UserServiceImpl implements IUserService {
         return user.getPassword().equals(user.getConfirmPassword());
     }
 
+    @Override
+    public boolean changePassword(Long userId, String oldPassword, String newPassword) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) return false;
+        User user = userOpt.get();
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return false;
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
+    }
+
     private Set<Role> getUserRoles() {
         Role role = this.roleRepository.findByName("ROLE_USER");
         Set<Role> roles = new HashSet<>();

@@ -97,4 +97,37 @@ public class ProductController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/top-selling")
+    public ResponseEntity<?> getTopSellingProducts(@RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "20") int size) {
+        int offset = page * size;
+        Page<Product> products = productService.getTopSellingProducts(size, offset);
+        ApiResponse<Page<Product>> response = new ApiResponse<>(
+                "Top selling products fetched successfully",
+                products,
+                HttpStatus.OK.value()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/by-category-or-newest")
+    public ResponseEntity<?> get20ByCategoryOrNewest(@RequestParam Long categoryId) {
+        var products = productService.get20ByCategoryOrNewest(categoryId);
+        java.util.Date now = new java.util.Date();
+        for (Product p : products) {
+            if (p.getCoupons() != null) {
+                p.setCoupons(p.getCoupons().stream()
+                    .filter(c -> (c.getFromDate() == null || !now.before(c.getFromDate()))
+                              && (c.getToDate() == null || !now.after(c.getToDate())))
+                    .collect(java.util.stream.Collectors.toSet()));
+            }
+        }
+        ApiResponse<?> response = new ApiResponse<>(
+                API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
+                products,
+                HttpStatus.OK.value()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

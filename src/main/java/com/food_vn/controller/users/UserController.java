@@ -7,6 +7,7 @@ import com.food_vn.model.users.JwtResponse;
 import com.food_vn.model.users.User;
 import com.food_vn.model.users.UserDTO;
 import com.food_vn.model.users.UserPrinciple;
+import com.food_vn.model.users.ChangePasswordRequest;
 import com.food_vn.service.users.IUserService;
 import com.food_vn.service.users.impl.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,32 @@ public class UserController {
         ApiResponse<User> response = new ApiResponse<>(
                 API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
                 userOutput,
+                HttpStatus.OK.value()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            ApiResponse<String> response = new ApiResponse<>(
+                    API_RESPONSE.UNAUTHORIZED_MESSAGE,
+                    HttpStatus.UNAUTHORIZED.value()
+            );
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
+        boolean result = userService.changePassword(userDetails.getId(), request.getOldPassword(), request.getNewPassword());
+        if (!result) {
+            ApiResponse<String> response = new ApiResponse<>(
+                    "Old password is incorrect!",
+                    HttpStatus.BAD_REQUEST.value()
+            );
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        ApiResponse<String> response = new ApiResponse<>(
+                "Password changed successfully!",
                 HttpStatus.OK.value()
         );
         return new ResponseEntity<>(response, HttpStatus.OK);

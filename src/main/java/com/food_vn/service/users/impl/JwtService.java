@@ -1,21 +1,36 @@
 package com.food_vn.service.users.impl;
 
-
 import com.food_vn.model.users.UserPrinciple;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    //    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expire-time}")
+    private long expireTimeInSeconds;
+
+    private SecretKey SECRET_KEY;
+
+    @PostConstruct
+    public void init() {
+        SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
     private static final long EXPIRE_TIME = 86400000000L;
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class.getName());
 
@@ -24,7 +39,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + EXPIRE_TIME * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + expireTimeInSeconds * 1000))
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS512)
                 .compact();
     }

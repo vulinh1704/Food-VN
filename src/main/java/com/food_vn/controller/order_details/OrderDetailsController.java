@@ -35,6 +35,7 @@ public class OrderDetailsController {
     @Autowired
     private OrderDetailService orderDetailService;
 
+
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody OrderDetail orderDetail, BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) throw new RuntimeException(API_RESPONSE.INVALID_INPUT_MESSAGE);

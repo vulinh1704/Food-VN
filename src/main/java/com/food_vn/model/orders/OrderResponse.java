@@ -1,49 +1,32 @@
 package com.food_vn.model.orders;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.food_vn.lib.base_model.BaseModel;
-import com.food_vn.model.address.Address;
-import com.food_vn.model.customers.Customer;
 import com.food_vn.model.order_details.OrderDetail;
 import com.food_vn.model.users.User;
-import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
-@Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Orders extends BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class OrderResponse {
     private Long id;
-
-    @Column()
     private Date date;
-
-    @Column(nullable = false)
     private Double total;
-
-    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
-
-    @Column(columnDefinition = "LONGTEXT")
     private String address;
-
-    @Column()
     private int status;
+    private List<OrderDetail> orderDetails;
 
-    public Orders(Long id, Date date, Double total, User user, String address, int status) {
+    public OrderResponse(Long id, Date date, Double total, User user, String address, int status, List<OrderDetail> orderDetails) {
         this.id = id;
         this.date = date;
         this.total = total;
         this.user = user;
         this.address = address;
         this.status = status;
+        this.orderDetails = orderDetails;
     }
 
-    public Orders() {
+    public OrderResponse() {
     }
 
     public Long getId() {
@@ -78,6 +61,14 @@ public class Orders extends BaseModel {
         this.user = user;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -86,11 +77,11 @@ public class Orders extends BaseModel {
         this.status = status;
     }
 
-    public String getAddress() {
-        return address;
+    public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 }

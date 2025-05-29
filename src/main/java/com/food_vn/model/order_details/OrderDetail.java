@@ -1,5 +1,7 @@
 package com.food_vn.model.order_details;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.food_vn.lib.base_model.BaseModel;
 import com.food_vn.model.orders.Orders;
 import com.food_vn.model.products.Product;
@@ -11,7 +13,7 @@ public class OrderDetail extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private Orders orders;
 
     @ManyToOne(fetch = FetchType.EAGER)

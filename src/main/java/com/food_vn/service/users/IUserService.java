@@ -28,4 +28,6 @@ public interface IUserService extends UserDetailsService {
     boolean isRegister(User user);
 
     boolean isCorrectConfirmPassword(User user);
+
+    boolean changePassword(Long userId, String oldPassword, String newPassword);
 }
