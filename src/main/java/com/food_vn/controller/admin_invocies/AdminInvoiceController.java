@@ -52,7 +52,7 @@ public class AdminInvoiceController {
 
     @PutMapping("/update-status")
     public ResponseEntity<?> updateStatus(@RequestBody Orders orders) {
-        Orders invoices = ordersService.updateStatus(orders);
+        Orders invoices = ordersService.updateStatus(orders, true);
         ApiResponse<Object> response = new ApiResponse<>(
                 API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
                 invoices,

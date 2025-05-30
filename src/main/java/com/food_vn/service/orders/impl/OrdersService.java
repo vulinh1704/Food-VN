@@ -7,9 +7,11 @@ import com.food_vn.model.orders.OrderResponse;
 import com.food_vn.model.orders.Orders;
 import com.food_vn.model.orders.OrdersDTO;
 import com.food_vn.model.products.Product;
+import com.food_vn.model.users.User;
 import com.food_vn.repository.order_details.OrderDetailsRepository;
 import com.food_vn.repository.orders.OrdersRepository;
 import com.food_vn.repository.products.ProductRepository;
+import com.food_vn.service.notification.impl.NotificationService;
 import com.food_vn.service.orders.IOrdersService;
 import com.food_vn.service.revenue.IRevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,12 +37,16 @@ public class OrdersService extends BaseService implements IOrdersService {
     @Autowired
     private IRevenueService revenueService;
 
-    public Orders updateStatus(Orders orders) {
+    @Autowired
+    private NotificationService notificationService;
+
+
+    public Orders updateStatus(Orders orders, boolean isAdmin) {
         Orders oldOrders = ordersRepository.findById(orders.getId()).orElse(null);
         assert oldOrders != null;
         int oldStatus = oldOrders.getStatus();
         oldOrders.setStatus(orders.getStatus());
-        if(orders.getCancellationReason() != null && !orders.getCancellationReason().isEmpty()) {
+        if (orders.getCancellationReason() != null && !orders.getCancellationReason().isEmpty()) {
             oldOrders.setCancellationReason(orders.getCancellationReason());
         }
         Orders newOrder = ordersRepository.save(oldOrders);
@@ -53,6 +60,22 @@ public class OrdersService extends BaseService implements IOrdersService {
                 product.setQuantity(product.getQuantity() + detail.getQuantity());
                 productRepository.save(product);
             }
+        }
+        User user = oldOrders.getUser();
+        // Notify admin if customer cancels order
+        if (newOrder.getStatus() == 0 && !isAdmin) {
+            String message = user.getUsername() + " canceled the order because " + newOrder.getCancellationReason();
+            notificationService.sendNotification(user, newOrder, "admin", "CANCEL_BY_USER", message);
+        }
+        // Notify user if admin cancels order
+        if (newOrder.getStatus() == 0 && isAdmin) {
+            String message = "Your order has been canceled due to " + newOrder.getCancellationReason();
+            notificationService.sendNotification(user, newOrder, "user", "CANCEL_BY_ADMIN", message);
+        }
+        // Notify user if admin confirms order (status 2 = confirmed/processing)
+        if (newOrder.getStatus() == 3) {
+            String message = "Your order is being processed, please wait.";
+            notificationService.sendNotification(user, newOrder, "user", "CONFIRMED", message);
         }
         return newOrder;
     }
@@ -117,6 +140,8 @@ public class OrdersService extends BaseService implements IOrdersService {
         order.setTotal(total);
         Orders output = ordersRepository.save(order);
         _createNewOrder(order);
+        String message = "You have a new order from " + order.getUser().getUsername() + " with total: " + order.getTotal();
+        notificationService.sendNotification(order.getUser(), order, "admin", "NEW_ORDER", message);
         return output;
     }
 

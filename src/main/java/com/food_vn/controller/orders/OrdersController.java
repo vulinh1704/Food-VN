@@ -119,7 +119,7 @@ public class OrdersController {
 
     @PutMapping("/update-status")
     public ResponseEntity<?> updateStatus(@RequestBody Orders orders) {
-        Orders invoices = ordersService.updateStatus(orders);
+        Orders invoices = ordersService.updateStatus(orders, false);
         ApiResponse<Object> response = new ApiResponse<>(
                 API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
                 invoices,
