@@ -75,7 +75,7 @@ public class SecurityConfig {
                                 .requestMatchers("/login", "/register", "/hello", "/categories/**", "/coupons/**", "/products/**").permitAll()
 //                                .requestMatchers().hasAnyAuthority("ROLE_USER")
                                 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
-                                .requestMatchers("/users/**", "/addresses/**", "/orders/**", "/order-details/**", "/evaluations/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/users/**", "/addresses/**", "/orders/**", "/order-details/**", "/evaluations/**", "/notifications/**").hasAnyRole("USER", "ADMIN")
 
 
 //                        .requestMatchers(HttpMethod.DELETE, "/categories",
