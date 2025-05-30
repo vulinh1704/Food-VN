@@ -15,8 +15,9 @@ public class OrderResponse {
     private String address;
     private int status;
     private List<OrderDetail> orderDetails;
+    private String cancellationReason;
 
-    public OrderResponse(Long id, Date date, Double total, User user, String address, int status, List<OrderDetail> orderDetails) {
+    public OrderResponse(Long id, Date date, Double total, User user, String address, int status, List<OrderDetail> orderDetails, String cancellationReason) {
         this.id = id;
         this.date = date;
         this.total = total;
@@ -24,6 +25,7 @@ public class OrderResponse {
         this.address = address;
         this.status = status;
         this.orderDetails = orderDetails;
+        this.cancellationReason = cancellationReason;
     }
 
     public OrderResponse() {
@@ -83,5 +85,13 @@ public class OrderResponse {
 
     public void setOrderDetails(List<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
+    }
+
+    public String getCancellationReason() {
+        return cancellationReason;
+    }
+
+    public void setCancellationReason(String cancellationReason) {
+        this.cancellationReason = cancellationReason;
     }
 }

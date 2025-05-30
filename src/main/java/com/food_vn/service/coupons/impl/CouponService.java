@@ -3,6 +3,7 @@ package com.food_vn.service.coupons.impl;
 import com.food_vn.lib.base_serivce.BaseService;
 import com.food_vn.lib.error_message.ERROR_MESSAGE;
 import com.food_vn.model.conpons.Coupon;
+import com.food_vn.model.products.Product;
 import com.food_vn.repository.coupons.CouponRepository;
 import com.food_vn.repository.products.ProductRepository;
 import com.food_vn.service.coupons.ICouponService;
@@ -55,8 +56,12 @@ public class CouponService extends BaseService implements ICouponService {
     public void delete(Long id) {
         Optional<Coupon> oldCoupon = this.couponRepository.findById(id);
         this.isAssert(oldCoupon.isPresent(), ERROR_MESSAGE.DATA_NOT_FOUND);
-        Long numberOfProduct = this.productRepository.countByCouponId(id);
-        this.isAssert(numberOfProduct == 0, ERROR_MESSAGE.COUPON_IN_USER);
+        java.util.List<Product> products = productRepository.findAllByCouponId(id);
+        for (Product product : products) {
+            if (product.getCoupons() != null && product.getCoupons().removeIf(c -> c.getId().equals(id))) {
+                productRepository.save(product);
+            }
+        }
         couponRepository.deleteById(id);
     }
 }

@@ -114,6 +114,9 @@ public class ProductService extends BaseService implements IProductService {
     }
 
     public void delete(Long id) {
+        if (orderDetailsRepository.existsByProductId(id)) {
+            throw new RuntimeException("Cannot delete products that already have orders");
+        }
         productRepository.deleteById(id);
     }
 

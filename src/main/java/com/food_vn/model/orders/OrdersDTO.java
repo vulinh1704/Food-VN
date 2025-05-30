@@ -12,8 +12,9 @@ public class OrdersDTO {
     private String address;
     private int status;
     private OrderDetail[] orderDetails;
+    private String cancellationReason;
 
-    public OrdersDTO(Long id, Date date, Double total, Long userId, String address, int status, OrderDetail[] orderDetails) {
+    public OrdersDTO(Long id, Date date, Double total, Long userId, String address, int status, OrderDetail[] orderDetails, String cancellationReason) {
         this.id = id;
         this.date = date;
         this.total = total;
@@ -21,6 +22,7 @@ public class OrdersDTO {
         this.address = address;
         this.status = status;
         this.orderDetails = orderDetails;
+        this.cancellationReason = cancellationReason;
     }
 
     public OrdersDTO() {
@@ -80,5 +82,13 @@ public class OrdersDTO {
 
     public void setOrderDetails(OrderDetail[] orderDetails) {
         this.orderDetails = orderDetails;
+    }
+
+    public String getCancellationReason() {
+        return cancellationReason;
+    }
+
+    public void setCancellationReason(String cancellationReason) {
+        this.cancellationReason = cancellationReason;
     }
 }

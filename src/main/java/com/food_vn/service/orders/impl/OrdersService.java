@@ -42,6 +42,9 @@ public class OrdersService extends BaseService implements IOrdersService {
         assert oldOrders != null;
         int oldStatus = oldOrders.getStatus();
         oldOrders.setStatus(orders.getStatus());
+        if(orders.getCancellationReason() != null && !orders.getCancellationReason().isEmpty()) {
+            oldOrders.setCancellationReason(orders.getCancellationReason());
+        }
         Orders newOrder = ordersRepository.save(oldOrders);
         if (oldStatus != 4 && orders.getStatus() == 4) {
             _handleRevenueWhenStatusToSuccess(newOrder);
@@ -152,6 +155,7 @@ public class OrdersService extends BaseService implements IOrdersService {
             orderResponse.setTotal(order.getTotal());
             orderResponse.setUser(order.getUser());
             orderResponse.setAddress(order.getAddress());
+            orderResponse.setCancellationReason(order.getCancellationReason());
             orderResponses.add(orderResponse);
         }
         return orderResponses;

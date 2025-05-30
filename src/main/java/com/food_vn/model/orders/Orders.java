@@ -34,13 +34,17 @@ public class Orders extends BaseModel {
     @Column()
     private int status;
 
-    public Orders(Long id, Date date, Double total, User user, String address, int status) {
+    @Column(name = "cancellation_reason", columnDefinition = "LONGTEXT")
+    private String cancellationReason;
+
+    public Orders(Long id, Date date, Double total, User user, String address, int status, String cancellationReason) {
         this.id = id;
         this.date = date;
         this.total = total;
         this.user = user;
         this.address = address;
         this.status = status;
+        this.cancellationReason = cancellationReason;
     }
 
     public Orders() {
@@ -92,5 +96,13 @@ public class Orders extends BaseModel {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getCancellationReason() {
+        return cancellationReason;
+    }
+
+    public void setCancellationReason(String cancellationReason) {
+        this.cancellationReason = cancellationReason;
     }
 }

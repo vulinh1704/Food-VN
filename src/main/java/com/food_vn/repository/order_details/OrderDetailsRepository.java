@@ -11,6 +11,8 @@ public interface OrderDetailsRepository extends JpaRepository<OrderDetail, Long>
     List<OrderDetail> findByOrdersId(Long orderId);
     List<OrderDetail> findByOrdersIdAndProductId(Long orderId, Long productId);
 
+    boolean existsByProductId(Long productId);
+
     @Query(value = "SELECT od.product_id AS productId, SUM(od.quantity) AS totalSold " +
            "FROM order_detail od " +
            "JOIN orders o ON o.id = od.orders_id " +

@@ -45,4 +45,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId ORDER BY p.createdAt DESC")
     java.util.List<Product> findTop20ByCategoryIdOrderByCreatedAtDesc(@Param("categoryId") Long categoryId, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT p FROM Product p JOIN p.coupons c WHERE c.id = :couponId")
+    java.util.List<Product> findAllByCouponId(@Param("couponId") Long couponId);
 }
