@@ -140,7 +140,7 @@ public class OrdersService extends BaseService implements IOrdersService {
         order.setTotal(total);
         Orders output = ordersRepository.save(order);
         _createNewOrder(order);
-        String message = "You have a new order from " + order.getUser().getUsername() + " with total: " + order.getTotal();
+        String message = "You have a new order from " + order.getUser().getUsername() + " with total: " + order.getTotal() + " VND";
         notificationService.sendNotification(order.getUser(), order, "admin", "NEW_ORDER", message);
         return output;
     }
