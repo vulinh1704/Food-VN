@@ -6,9 +6,9 @@ import com.food_vn.model.orders.Orders;
 import com.food_vn.repository.notification.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class NotificationService {
@@ -18,12 +18,52 @@ public class NotificationService {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public Page<Notification> getNotificationsByUser(User user, Pageable pageable) {
-        return notificationRepository.findByUserId(user.getId(), pageable);
+    public List<Notification> getNotificationsByUserWithFilter(User user, String filter) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start, end;
+        end = switch (filter) {
+            case "day" -> {
+                start = now.toLocalDate().atStartOfDay();
+                yield start.plusDays(1);
+            }
+            case "month" -> {
+                start = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
+                yield start.plusMonths(1);
+            }
+            case "year" -> {
+                start = now.withDayOfYear(1).toLocalDate().atStartOfDay();
+                yield start.plusYears(1);
+            }
+            default -> {
+                start = null;
+                yield null;
+            }
+        };
+        return notificationRepository.findByUserIdAndCreatedAtBetween(user.getId(), start, end);
     }
 
-    public Page<Notification> getNotificationsForAdmin(Pageable pageable) {
-        return notificationRepository.findByReceiverType("admin", pageable);
+    public List<Notification> getNotificationsForAdminWithFilter(String filter) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start, end;
+        end = switch (filter) {
+            case "day" -> {
+                start = now.toLocalDate().atStartOfDay();
+                yield start.plusDays(1);
+            }
+            case "month" -> {
+                start = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
+                yield start.plusMonths(1);
+            }
+            case "year" -> {
+                start = now.withDayOfYear(1).toLocalDate().atStartOfDay();
+                yield start.plusYears(1);
+            }
+            default -> {
+                start = null;
+                yield null;
+            }
+        };
+        return notificationRepository.findByReceiverTypeAndCreatedAtBetween("admin", start, end);
     }
 
     public Notification sendNotification(User user, Orders order, String receiverType, String type, String message) {

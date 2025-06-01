@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @RestController
 @CrossOrigin("*")
@@ -26,8 +24,7 @@ public class NotificationController {
     private UserRepository userRepository;
 
     @GetMapping("/user")
-    public ResponseEntity<?> getNotificationsByUser(@RequestParam(defaultValue = "0") int page,
-                                                    @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getNotificationsByUser(@RequestParam(defaultValue = "day") String filter) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             ApiResponse<User> response = new ApiResponse<>(
@@ -38,22 +35,19 @@ public class NotificationController {
         }
         UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
         User user = userRepository.findById(userDetails.getId()).orElse(null);
-        Pageable pageable = PageRequest.of(page, size);
         ApiResponse<?> response = new ApiResponse<>(
                 API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
-                notificationService.getNotificationsByUser(user, pageable),
+                notificationService.getNotificationsByUserWithFilter(user, filter),
                 HttpStatus.OK.value()
         );
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<?> getNotificationsForAdmin(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public ResponseEntity<?> getNotificationsForAdmin(@RequestParam(defaultValue = "day") String filter) {
         ApiResponse<?> response = new ApiResponse<>(
                 API_RESPONSE.FETCHED_SUCCESS_MESSAGE,
-                notificationService.getNotificationsForAdmin(pageable),
+                notificationService.getNotificationsForAdminWithFilter(filter),
                 HttpStatus.OK.value()
         );
         return ResponseEntity.ok(response);
