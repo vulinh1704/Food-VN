@@ -8,6 +8,7 @@ import com.food_vn.model.orders.Orders;
 import com.food_vn.model.orders.OrdersDTO;
 import com.food_vn.model.products.Product;
 import com.food_vn.model.users.User;
+import com.food_vn.repository.evaluation.EvaluationRepository;
 import com.food_vn.repository.order_details.OrderDetailsRepository;
 import com.food_vn.repository.orders.OrdersRepository;
 import com.food_vn.repository.products.ProductRepository;
@@ -39,6 +40,9 @@ public class OrdersService extends BaseService implements IOrdersService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private EvaluationRepository evaluationRepository;
 
 
     public Orders updateStatus(Orders orders, boolean isAdmin) {
@@ -193,5 +197,19 @@ public class OrdersService extends BaseService implements IOrdersService {
 
     private void _handleRevenueWhenStatusToSuccess(Orders order) {
         revenueService.saveRevenueForDate(order.getDate(), order.getTotal());
+    }
+
+    @Override
+    public boolean hasUserOrderedProductWithStatus(Long userId, Long productId, int status) {
+        List<Orders> orders = ordersRepository.findAllByUserIdAndStatus(userId, status);
+        int totalBought = 0;
+        for (Orders order : orders) {
+            if (!orderDetailsRepository.findByOrdersIdAndProductId(order.getId(), productId).isEmpty()) {
+                totalBought++;
+            }
+        }
+        int totalEvaluated;
+        totalEvaluated = evaluationRepository.countByUserIdAndProductId(userId, productId);
+        return totalEvaluated < totalBought && totalBought > 0;
     }
 }

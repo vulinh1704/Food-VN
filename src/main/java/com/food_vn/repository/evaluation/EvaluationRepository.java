@@ -6,5 +6,6 @@ import java.util.List;
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     List<Evaluation> findAllByProduct_Id(Long productId);
     List<Evaluation> findTop10ByOrderByIdDesc();
+    int countByUserIdAndProductId(Long userId, Long productId);
 }
 
