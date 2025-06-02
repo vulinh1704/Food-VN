@@ -1,9 +1,12 @@
 package com.food_vn.model.notification;
+
 import com.food_vn.lib.base_model.BaseModel;
 import com.food_vn.model.orders.Orders;
 import com.food_vn.model.users.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Notification extends BaseModel {
     @Id
@@ -12,11 +15,11 @@ public class Notification extends BaseModel {
 
     private Boolean isRead;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private Orders orders;
 

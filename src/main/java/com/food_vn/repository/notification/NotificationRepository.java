@@ -15,13 +15,10 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    Page<Notification> findByUserId(Long id, Pageable pageable);
 
-    Page<Notification> findByReceiverType(String receiverType, Pageable pageable);
-
-    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId AND (:start IS NULL OR n.createdAt >= :start) AND (:end IS NULL OR n.createdAt < :end)")
+    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId AND (:start IS NULL OR n.createdAt >= :start) AND (:end IS NULL OR n.createdAt < :end) ORDER BY n.createdAt DESC")
     List<Notification> findByUserIdAndCreatedAtBetween(@Param("userId") Long userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT n FROM Notification n WHERE n.receiverType = :receiverType AND (:start IS NULL OR n.createdAt >= :start) AND (:end IS NULL OR n.createdAt < :end)")
+    @Query("SELECT n FROM Notification n WHERE n.receiverType = :receiverType AND (:start IS NULL OR n.createdAt >= :start) AND (:end IS NULL OR n.createdAt < :end) ORDER BY n.createdAt DESC")
     List<Notification> findByReceiverTypeAndCreatedAtBetween(@Param("receiverType") String receiverType, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

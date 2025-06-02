@@ -1,14 +1,17 @@
 package com.food_vn.service.notification.impl;
 
 import com.food_vn.model.notification.Notification;
+import com.food_vn.model.notification.NotificationDTO;
 import com.food_vn.model.users.User;
 import com.food_vn.model.orders.Orders;
 import com.food_vn.repository.notification.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
@@ -63,7 +66,8 @@ public class NotificationService {
                 yield null;
             }
         };
-        return notificationRepository.findByReceiverTypeAndCreatedAtBetween("admin", start, end);
+        List<Notification> notifications = notificationRepository.findByReceiverTypeAndCreatedAtBetween("admin", start, end);
+        return notifications;
     }
 
     public Notification sendNotification(User user, Orders order, String receiverType, String type, String message) {
@@ -84,5 +88,14 @@ public class NotificationService {
             messagingTemplate.convertAndSend("/topic/notifications/" + user.getId(), newNotification);
         }
         return saved;
+    }
+
+    public Notification markAsRead(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId).orElse(null);
+        if (notification != null) {
+            notification.setRead(true);
+            notificationRepository.save(notification);
+        }
+        return notification;
     }
 }

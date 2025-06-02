@@ -4,6 +4,7 @@ import com.food_vn.lib.app_const.API_RESPONSE;
 import com.food_vn.model.api_responses.ApiResponse;
 import com.food_vn.model.users.User;
 import com.food_vn.model.users.UserPrinciple;
+import com.food_vn.model.notification.Notification;
 import com.food_vn.repository.users.UserRepository;
 import com.food_vn.service.notification.impl.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +53,16 @@ public class NotificationController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{id}/read")
+    public ResponseEntity<?> markNotificationAsRead(@PathVariable("id") Long id) {
+        Notification notification = notificationService.markAsRead(id);
+        ApiResponse<?> response = new ApiResponse<>(
+            API_RESPONSE.SAVED_SUCCESS_MESSAGE,
+            notification,
+            HttpStatus.OK.value()
+        );
+        return ResponseEntity.ok(response);
+    }
 }
+
