@@ -48,3 +48,4 @@ public class Revenue {
         this.total = total;
     }
 }
+

@@ -53,7 +53,10 @@ public class UserServiceImpl implements IUserService {
 
     public User register(User user) {
         User userReq = this.findByUsername(user.getUsername());
-        if (userReq != null) throw new RuntimeException("User already exists");
+        if (userReq != null) throw new RuntimeException("Username already exists");
+        User userEmail = userRepository.findByEmail(user.getEmail());
+        if (userEmail != null) throw new RuntimeException("Email already exists");
+        user.setConfirmPassword(user.getPassword());
         if (!this.isCorrectConfirmPassword(user)) throw new RuntimeException("confirm_password_incorrect");
         user.setRoles(this.getUserRoles());
         user.setPassword(passwordEncoder.encode(user.getPassword()));

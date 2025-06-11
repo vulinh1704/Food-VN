@@ -47,18 +47,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtService.generateTokenLogin(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User currentUser = userService.findByUsername(user.getUsername());
-        ApiResponse<JwtResponse> response = new ApiResponse<>(
-                API_RESPONSE.LOGIN_SUCCESS_MESSAGE,
-                new JwtResponse(jwt, currentUser.getId(), userDetails.getUsername(), userDetails.getAuthorities()),
-                HttpStatus.ACCEPTED.value()
-        );
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+    public ResponseEntity<?> login(@RequestBody User user) throws Exception {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtService.generateTokenLogin(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User currentUser = userService.findByUsername(user.getUsername());
+            ApiResponse<JwtResponse> response = new ApiResponse<>(
+                    API_RESPONSE.LOGIN_SUCCESS_MESSAGE,
+                    new JwtResponse(jwt, currentUser.getId(), userDetails.getUsername(), userDetails.getAuthorities()),
+                    HttpStatus.ACCEPTED.value()
+            );
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        } catch (Exception ex) {
+            throw new RuntimeException("Username or password is incorrect");
+        }
     }
 
     @GetMapping("/users/get-info")
