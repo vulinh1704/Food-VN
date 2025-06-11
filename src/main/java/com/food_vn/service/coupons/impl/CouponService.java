@@ -50,7 +50,11 @@ public class CouponService extends BaseService implements ICouponService {
     }
 
     public List<Coupon> getAll() {
-        return couponRepository.findAll();
+        Date now = new Date();
+        return couponRepository.findAll().stream()
+            .filter(coupon -> (coupon.getFromDate() == null || !coupon.getFromDate().after(now))
+                && (coupon.getToDate() == null || !coupon.getToDate().before(now)))
+            .toList();
     }
 
     public void delete(Long id) {

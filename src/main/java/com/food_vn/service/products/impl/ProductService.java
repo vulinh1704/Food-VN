@@ -96,16 +96,16 @@ public class ProductService extends BaseService implements IProductService {
         List<Product> products = productRepository.findAllById(productIds);
         Map<Long, Product> productMap = products.stream().collect(Collectors.toMap(Product::getId, p -> p));
         List<Product> orderedProducts = productIds.stream().map(productMap::get).filter(Objects::nonNull).collect(Collectors.toList());
-        if (orderedProducts.size() < 10) {
+        if (orderedProducts.size() < limit) {
             Set<Long> excludeIds = new HashSet<>(productIds);
             Page<Product> newest;
             if (excludeIds == null || excludeIds.isEmpty()) {
-                newest = productRepository.findNewestProductsExcludeIds(null, org.springframework.data.domain.PageRequest.of(0, 10 - orderedProducts.size()));
+                newest = productRepository.findNewestProductsExcludeIds(null, org.springframework.data.domain.PageRequest.of(0, limit - orderedProducts.size()));
             } else {
-                newest = productRepository.findNewestProductsExcludeIds(excludeIds, org.springframework.data.domain.PageRequest.of(0, 10 - orderedProducts.size()));
+                newest = productRepository.findNewestProductsExcludeIds(excludeIds, org.springframework.data.domain.PageRequest.of(0, limit - orderedProducts.size()));
             }
             for (Product p : newest.getContent()) {
-                if (orderedProducts.size() >= 10) break;
+                if (orderedProducts.size() >= limit) break;
                 orderedProducts.add(p);
             }
         }
