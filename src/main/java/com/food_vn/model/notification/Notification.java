@@ -3,10 +3,8 @@ package com.food_vn.model.notification;
 import com.food_vn.lib.base_model.BaseModel;
 import com.food_vn.model.orders.Orders;
 import com.food_vn.model.users.User;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Notification extends BaseModel {
     @Id
